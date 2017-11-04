@@ -11,9 +11,13 @@ public class NotaFiscal {
 	private int id;
 	private List<ItemVenda> itemList;
 	private BDProduto bdProdutos;
+	private String status;
+	private boolean podeMudar = true;
 	
 	// Constructor
 	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas) throws NullPointerException {
+		this.status = "em elaboracao";
+		this.id = -1;
 		this.bdProdutos = vendas;
 		itemList = new ArrayList<ItemVenda>();
 
@@ -35,9 +39,11 @@ public class NotaFiscal {
 	}
 	
 	public void addItem(String itemName, int quantidade) {
-		Compravel compra = bdProdutos.getCompravel(itemName);
-		ItemVenda newItem = new ItemVenda(compra, quantidade);
-		itemList.add(newItem);
+		if (this.podeMudar) {
+			Compravel compra = bdProdutos.getCompravel(itemName);
+			ItemVenda newItem = new ItemVenda(compra, quantidade);
+			itemList.add(newItem);
+		}
 	}
 	
 	public int getId() {
@@ -45,23 +51,20 @@ public class NotaFiscal {
 	}
 	
 	public boolean removeItem(String toRemove) {
-		if (itemList.size() > 1) {
-			int count = 0;
-			for (ItemVenda item: itemList) {
-				if (item.getVenda().getNome().equals(toRemove)) {
-					//Item removedItem = new Item(item.getVenda(), item.getQuantidade());
-					itemList.remove(count);
-					return true;
+		if (this.podeMudar) {
+			if (itemList.size() > 1) {
+				int count = 0;
+				for (ItemVenda item: itemList) {
+					if (item.getVenda().getNome().equals(toRemove)) {
+						itemList.remove(count);
+						return true;
+					}
+					count ++;
 				}
-				count ++;
 			}
 		}
 		return false;
-		
-		//		if (itemList.size() > 1) {
-//			return itemList.remove(toRemove);
-//		}
-//		return false;
+
 	}
 	
 	public double getPreco() {
@@ -70,6 +73,33 @@ public class NotaFiscal {
 			total += item.getPreco();
 		}
 		return total;
+	}
+	
+	boolean setId(int id) {
+		if (this.id == -1) {
+			this.id = id;
+			return true;
+		}
+		return false;
+	}
+	
+	boolean validar() {
+		if (this.status.equals("em elaboracao") && id!=-1) {
+			this.status = "validada";
+			this.podeMudar = false;
+			return true;
+		}
+		return false;
+	}
+	
+	public void printNF() {
+		if (this.status.equals("em elaboracao")) {
+			System.out.println("ID ainda não definido");
+		}
+		for (ItemVenda item : itemList) {
+			System.out.println(item.toString());
+		}
+		System.out.println(status);
 	}
 	
 }
