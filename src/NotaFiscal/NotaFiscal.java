@@ -1,32 +1,43 @@
 package NotaFiscal;
 import java.util.List;
+
+import BDProduto.BDProduto;
+import ItemVenda.Compravel;
+import ItemVenda.Estoque;
+import ItemVenda.ItemVenda;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
-import BDProduto.BDProduto;
-import BDProduto.ItemVenda;
-import BDProduto.Compravel;
-
 public class NotaFiscal {
 	private int id;
+	private Estoque estoque;
 	private List<ItemVenda> itemList;
 	private BDProduto bdProdutos;
 	private String status;
 	private Validador validador;
 	
 	// Constructor
-	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas, Validador validador) throws NullPointerException {
+	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas, Validador validador, Estoque estoque) throws NullPointerException {
+		this.estoque = estoque;
 		this.status = "em elaboracao";
 		this.id = -1;
 		this.bdProdutos = vendas;
 		itemList = new ArrayList<ItemVenda>();
 		this.validador = validador;
-
 		
 		try {
 			Compravel venda = vendas.getCompravel(nomeProduto);
-			ItemVenda newItem = new ItemVenda(venda, quantidadeProduto);
-			itemList.add(newItem);
+			if (estoque.disponibilidadeDeProduto(venda) >= quantidadeProduto) {
+				ItemVenda newItem = new ItemVenda(venda, quantidadeProduto);
+				estoque.retirarProduto(venda, quantidadeProduto);
+				itemList.add(newItem);
+			} else {
+				/*
+				 * TODO: Refactor this part!
+				 */
+				throw new NullPointerException();
+			}
 		}
 		catch (NullPointerException e){
 			throw e;
@@ -39,12 +50,17 @@ public class NotaFiscal {
 		return Collections.unmodifiableList(this.itemList);
 	}
 	
-	public void addItem(String itemName, int quantidade) {
+	public boolean addItem(String itemName, int quantidade) {
 		if (this.podeMudar()) {
 			Compravel compra = bdProdutos.getCompravel(itemName);
-			ItemVenda newItem = new ItemVenda(compra, quantidade);
-			itemList.add(newItem);
+			if (estoque.disponibilidadeDeProduto(compra) >= quantidade) {
+				estoque.retirarProduto(compra, quantidade);
+				ItemVenda newItem = new ItemVenda(compra, quantidade);
+				itemList.add(newItem);
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	public int getId() {
@@ -57,6 +73,7 @@ public class NotaFiscal {
 				int count = 0;
 				for (ItemVenda item: itemList) {
 					if (item.getVenda().getNome().equals(toRemove)) {
+						estoque.devolverProduto(item.getVenda(), item.getQuantidade());
 						itemList.remove(count);
 						return true;
 					}
@@ -65,7 +82,6 @@ public class NotaFiscal {
 			}
 		}
 		return false;
-
 	}
 	
 	public double getPreco() {

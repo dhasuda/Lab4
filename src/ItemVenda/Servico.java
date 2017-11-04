@@ -1,10 +1,10 @@
-package BDProduto;
+package ItemVenda;
 
-public class Produto implements Compravel {
+public class Servico implements Compravel {
 	private String nome;
 	private double preco;
 	
-	Produto(String nome, double preco){
+	Servico(String nome, double preco){
 		this.nome = nome;
 		this.preco = preco;
 	}

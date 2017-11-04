@@ -1,4 +1,4 @@
-package BDProduto;
+package ItemVenda;
 
 public interface Compravel {
 	public String getNome();

@@ -1,4 +1,4 @@
-package BDProduto;
+package ItemVenda;
 
 public class ItemVenda {
 	private Compravel venda;
