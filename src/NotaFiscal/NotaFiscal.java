@@ -76,7 +76,7 @@ public class NotaFiscal {
 	}
 	
 	boolean setId(int id) {
-		if (this.id == -1) {
+		if (this.id == -1 && this.podeMudar) {
 			this.id = id;
 			return true;
 		}
@@ -84,7 +84,7 @@ public class NotaFiscal {
 	}
 	
 	boolean validar() {
-		if (this.status.equals("em elaboracao") && id!=-1) {
+		if (id!=-1 && this.podeMudar) {
 			this.status = "validada";
 			this.podeMudar = false;
 			return true;
@@ -93,7 +93,7 @@ public class NotaFiscal {
 	}
 	
 	public void printNF() {
-		if (this.status.equals("em elaboracao")) {
+		if (this.podeMudar) {
 			System.out.println("ID ainda não definido");
 		}
 		for (ItemVenda item : itemList) {
