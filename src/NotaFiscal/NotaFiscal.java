@@ -12,14 +12,15 @@ public class NotaFiscal {
 	private List<ItemVenda> itemList;
 	private BDProduto bdProdutos;
 	private String status;
-	private boolean podeMudar = true;
+	private Validador validador;
 	
 	// Constructor
-	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas) throws NullPointerException {
+	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas, Validador validador) throws NullPointerException {
 		this.status = "em elaboracao";
 		this.id = -1;
 		this.bdProdutos = vendas;
 		itemList = new ArrayList<ItemVenda>();
+		this.validador = validador;
 
 		
 		try {
@@ -39,7 +40,7 @@ public class NotaFiscal {
 	}
 	
 	public void addItem(String itemName, int quantidade) {
-		if (this.podeMudar) {
+		if (this.podeMudar()) {
 			Compravel compra = bdProdutos.getCompravel(itemName);
 			ItemVenda newItem = new ItemVenda(compra, quantidade);
 			itemList.add(newItem);
@@ -51,7 +52,7 @@ public class NotaFiscal {
 	}
 	
 	public boolean removeItem(String toRemove) {
-		if (this.podeMudar) {
+		if (this.podeMudar()) {
 			if (itemList.size() > 1) {
 				int count = 0;
 				for (ItemVenda item: itemList) {
@@ -76,24 +77,34 @@ public class NotaFiscal {
 	}
 	
 	boolean setId(int id) {
-		if (this.id == -1 && this.podeMudar) {
+		if (this.id == -1 && this.podeMudar()) {
 			this.id = id;
 			return true;
 		}
 		return false;
 	}
 	
-	boolean validar() {
-		if (id!=-1 && this.podeMudar) {
-			this.status = "validada";
-			this.podeMudar = false;
+	private boolean podeMudar() {
+		if (this.status == "em elaboracao")
 			return true;
-		}
 		return false;
 	}
 	
+	void validar() {
+		if (this.podeMudar()) {
+			try {
+				if (validador.isValid(this)) {
+					this.status = "validada";
+				}
+			} catch(Exception e) {
+				
+			}
+		}
+		System.out.println("A nota fiscal ja foi validada");
+	}
+	
 	public void printNF() {
-		if (this.podeMudar) {
+		if (this.podeMudar()) {
 			System.out.println("ID ainda não definido");
 		}
 		for (ItemVenda item : itemList) {
