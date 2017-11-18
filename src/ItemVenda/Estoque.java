@@ -1,5 +1,7 @@
 package ItemVenda;
 
+import BDProduto.Compravel;
+
 public interface Estoque {
 	
 	public int disponibilidadeDeProduto(Compravel compravel);

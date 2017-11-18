@@ -2,7 +2,7 @@ package NotaFiscal;
 import java.util.List;
 
 import BDProduto.BDProduto;
-import ItemVenda.Compravel;
+import BDProduto.Compravel;
 import ItemVenda.Estoque;
 import ItemVenda.ItemVenda;
 
@@ -111,6 +111,7 @@ public class NotaFiscal {
 			try {
 				if (validador.isValid(this)) {
 					this.status = "validada";
+					// TODO: Enviar para a prefeitura; get new ID etc
 				}
 			} catch(Exception e) {
 				

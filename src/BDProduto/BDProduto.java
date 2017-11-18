@@ -1,7 +1,5 @@
 package BDProduto;
 
-import ItemVenda.Compravel;
-
 public class BDProduto {
 	
 	private static BDProduto singleBDProduto = new BDProduto();
