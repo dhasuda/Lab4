@@ -8,28 +8,35 @@ import NotaFiscal.NotaFiscal;
 public class BDNF {
 	private static BDNF _bdnf = new BDNF();
 	private static int _id;
-	private String _state = "invalida";
 	private Set<NotaFiscal> notasFiscais = new HashSet<NotaFiscal>();
+	private Prefeitura _prefeitura;
+	
+	public void recebePrefeitura(Prefeitura prefeitura){
+		_prefeitura = prefeitura;
+	}
 	
 	static BDNF getInstance() {
 		return _bdnf;
 	}
 	
-	boolean isValid(NotaFiscal notaFiscal) throws Exception {
-		if (!notaFiscal.getItemList().isEmpty()) {
-			_state = "valida";
-			_id++;
-			notasFiscais.add(notaFiscal);
-			return true;
+	NotaFiscal validarNF(NotaFiscal notaFiscal) throws Exception {
+		if(notaFiscal.getStatus() == "em elaboracao") {
+			if (isConsistente(notaFiscal)) {
+				notaFiscal.setStatus("validada");
+				notaFiscal.setId(++_id);
+				notasFiscais.add(notaFiscal);
+				final NotaFiscal notaFiscalImutavel = notaFiscal;
+				_prefeitura.recebeNovaNF(notaFiscalImutavel);
+				return notaFiscalImutavel;
+			}
+			notaFiscal.setStatus("invalida");
+			throw new Exception("A nota fiscal nao foi aceita pelo Banco de Dados.\n");
 		}
-		_state = "invalida";
-		throw new Exception("A nota fiscal nao foi aceita pelo Banco de Dados");
+		throw new Exception("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
 	}
 	
-	int getId() {
-		if (_state == "valida")
-			return _id;
-		System.out.println("A nota fiscal nao foi validada pelo Banco de Dados");
-		return -1;
+	boolean isConsistente(NotaFiscal notaFiscal) {
+		/* Implementar */
+		return true;
 	}
 }
