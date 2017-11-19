@@ -3,8 +3,6 @@ import java.util.List;
 
 import BDProduto.BDProduto;
 import BDProduto.Compravel;
-import Impostos.BDTax;
-import Impostos.StrategyImpostos;
 import ItemVenda.Estoque;
 import ItemVenda.ItemVenda;
 
@@ -19,15 +17,20 @@ public class NotaFiscal {
 	private BDProduto bdProdutos;
 	private String status;
 	private BDTax bdTax;
+	private String statusCliente = "nao validado ainda";
+	private String CPF;
+	private SPC spc;
 	
 	// Constructor
-	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas, Estoque estoque) throws NullPointerException {
+	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas, Estoque estoque, String CPF) throws NullPointerException {
 		this.estoque = estoque;
 		this.status = "em elaboracao";
 		this.bdNF = BDNF.getInstance();
 		this.bdProdutos = vendas;
 		this.bdTax = BDTax.getInstance();
 		itemList = new ArrayList<ItemVenda>();
+		this.CPF = CPF;
+		this.spc = SPC.getInstance();
 		
 		try {
 			Compravel venda = vendas.getCompravel(nomeProduto);
@@ -105,11 +108,27 @@ public class NotaFiscal {
 
 	void validar() {
 		try {
-			if (this.status == "em elaboracao") {
-				this.taxar();
-				bdNF.validarNF(this);
+			if(this.statusCliente == "validado") {
+				if (this.status == "em elaboracao") {
+					bdNF.validarNF(this);
+				}
+				System.out.println("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
+			} else if (this.statusCliente == "nao validado ainda") { 
+				System.out.println("Cliente ainda nao validado.\n");
+			} else { 
+				throw new Exception("O cliente foi invalidado, e a nota fiscal nao podera ser validada.\n");
 			}
-			throw new Exception("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
+		} catch (Exception e) {
+		
+		}
+	}
+	
+	void validarCliente() {
+		try {
+			if (this.statusCliente == "nao validado ainda") {
+				spc.validarCPF(CPF);
+			}
+			System.out.println("O cliente nao pode ser validado novamente pelo SPC.\n");
 		} catch (Exception e) {
 		
 		}
@@ -121,6 +140,10 @@ public class NotaFiscal {
 	
 	String getStatus() {
 		return this.status;
+	}
+	
+	void setStatusCliente(String statusCliente) {
+		this.statusCliente = statusCliente;
 	}
 	
 	public void printNF() {
