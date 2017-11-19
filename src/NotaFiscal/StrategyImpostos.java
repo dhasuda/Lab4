@@ -1,4 +1,4 @@
-package Impostos;
+package NotaFiscal;
 
 import java.util.List;
 import java.util.Set;
@@ -16,13 +16,11 @@ public class StrategyImpostos {
 	}
 	
 	private void executarTaxacoes() {
-		Context taxado;
-		Set<PSVisitor> impostos = bdTax.getImpostos();
+		Taxador taxa = new Taxador();
+		Set<Imposto> impostos = bdTax.getImpostos();
 		for (ItemVenda item: itemList) {
-			for(PSVisitor imposto : impostos) {
-				taxado = new Context(imposto);
-				taxado.visit(item);
-				item.setImposto(taxado.getTaxacao());
+			for(Imposto imposto : impostos) {
+				taxa.visitarETaxar(item, imposto);
 			}
 			
 		}
