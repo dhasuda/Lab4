@@ -3,6 +3,8 @@ import java.util.List;
 
 import BDProduto.BDProduto;
 import BDProduto.Compravel;
+import Impostos.BDTax;
+import Impostos.StrategyImpostos;
 import ItemVenda.Estoque;
 import ItemVenda.ItemVenda;
 
@@ -16,13 +18,15 @@ public class NotaFiscal {
 	private BDNF bdNF;
 	private BDProduto bdProdutos;
 	private String status;
+	private BDTax bdTax;
 	
 	// Constructor
-	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDNF bdNF, BDProduto vendas, Estoque estoque) throws NullPointerException {
+	public NotaFiscal(int quantidadeProduto, String nomeProduto, BDProduto vendas, Estoque estoque) throws NullPointerException {
 		this.estoque = estoque;
 		this.status = "em elaboracao";
-		this.bdNF = bdNF;
+		this.bdNF = BDNF.getInstance();
 		this.bdProdutos = vendas;
+		this.bdTax = BDTax.getInstance();
 		itemList = new ArrayList<ItemVenda>();
 		
 		try {
@@ -47,6 +51,10 @@ public class NotaFiscal {
 	
 	public List<ItemVenda> getItemList() {
 		return Collections.unmodifiableList(this.itemList);
+	}
+	
+	private void taxar() {
+		new StrategyImpostos(this.itemList);
 	}
 	
 	public boolean addItem(String itemName, int quantidade) {
@@ -97,7 +105,11 @@ public class NotaFiscal {
 
 	void validar() {
 		try {
-			bdNF.validarNF(this);
+			if (this.status == "em elaboracao") {
+				this.taxar();
+				bdNF.validarNF(this);
+			}
+			throw new Exception("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
 		} catch (Exception e) {
 		
 		}

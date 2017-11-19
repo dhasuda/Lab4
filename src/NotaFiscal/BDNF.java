@@ -20,19 +20,16 @@ public class BDNF {
 	}
 	
 	NotaFiscal validarNF(NotaFiscal notaFiscal) throws Exception {
-		if(notaFiscal.getStatus() == "em elaboracao") {
-			if (isConsistente(notaFiscal)) {
-				notaFiscal.setStatus("validada");
-				notaFiscal.setId(++_id);
-				notasFiscais.add(notaFiscal);
-				final NotaFiscal notaFiscalImutavel = notaFiscal;
-				_prefeitura.recebeNovaNF(notaFiscalImutavel);
-				return notaFiscalImutavel;
-			}
-			notaFiscal.setStatus("invalida");
-			throw new Exception("A nota fiscal nao foi aceita pelo Banco de Dados.\n");
+		if (isConsistente(notaFiscal)) {
+			notaFiscal.setStatus("validada");
+			notaFiscal.setId(++_id);
+			final NotaFiscal notaFiscalImutavel = notaFiscal;
+			_prefeitura.recebeNovaNF(notaFiscalImutavel);
+			notasFiscais.add(notaFiscalImutavel);
+			return notaFiscalImutavel;
 		}
-		throw new Exception("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
+		notaFiscal.setStatus("invalida");
+		throw new Exception("A nota fiscal nao foi aceita pelo Banco de Dados.\n");
 	}
 	
 	boolean isConsistente(NotaFiscal notaFiscal) {

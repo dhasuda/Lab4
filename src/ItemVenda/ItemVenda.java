@@ -6,6 +6,8 @@ public class ItemVenda {
 	private Compravel venda;
 	private int quantidade;
 	private double desconto;
+	private String categoriaTributaria;
+	private double imposto;
 	
 	public ItemVenda(Compravel venda, int quantidade) {
 		this.venda = venda;
@@ -27,6 +29,14 @@ public class ItemVenda {
 	}
 	
 	public double getPreco() {
-		return this.venda.getPreco() * (double)this.quantidade * (1-this.desconto);
+		return this.venda.getPreco() * (double)this.quantidade * (1-this.desconto) + this.imposto;
+	}
+	
+	public void setImposto(double imposto) {
+		this.imposto = imposto;
+	}
+	
+	public String getCategoriaTributaria() {
+		return venda.getCategoriaTributaria();
 	}
 }
