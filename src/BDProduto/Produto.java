@@ -1,5 +1,6 @@
 package BDProduto;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -14,11 +15,12 @@ public class Produto implements Compravel {
 	private double imposto;
 	
 	
-	Produto(String nome, double preco, String setor, String categoriaTributaria){
+	public Produto(String nome, double preco, String setor, String categoriaTributaria){
 		this.nome = nome;
 		this.preco = preco;
 		this.setor = setor;
 		this.categoriaTributaria = categoriaTributaria;
+		subCompraveis = new ArrayList<Compravel>();
 	}
 	
 	void addSubCompravel(Compravel compravel) {

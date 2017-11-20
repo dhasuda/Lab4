@@ -8,6 +8,8 @@ public class BDTax {
 	private static BDTax bdTax = new BDTax();
 	Set<Imposto> impostos = new HashSet<Imposto>();
 	
+	private BDTax(){}//singleton
+	
 	public static BDTax getInstance() {
 		return bdTax;
 	}

@@ -11,6 +11,8 @@ public class BDNF {
 	private Set<NotaFiscal> notasFiscais = new HashSet<NotaFiscal>();
 	private Prefeitura _prefeitura;
 	
+	private BDNF(){}//singleton
+	
 	public void recebePrefeitura(Prefeitura prefeitura){
 		_prefeitura = prefeitura;
 	}

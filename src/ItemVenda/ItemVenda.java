@@ -14,6 +14,7 @@ public class ItemVenda {
 	private double imposto;
 	
 	public ItemVenda(Compravel venda, int quantidade) {
+
 		this.venda = venda;
 		this.quantidade = quantidade;
 		this.desconto = 0.0;

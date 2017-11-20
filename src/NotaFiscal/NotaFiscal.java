@@ -31,7 +31,6 @@ public class NotaFiscal {
 		itemList = new ArrayList<ItemVenda>();
 		this.CPF = CPF;
 		this.spc = SPC.getInstance();
-		
 		try {
 			Compravel venda = vendas.getCompravel(nomeProduto);
 			if (estoque.disponibilidadeDeProduto(venda) >= quantidadeProduto) {
@@ -39,9 +38,6 @@ public class NotaFiscal {
 				estoque.retirarProduto(venda, quantidadeProduto);
 				itemList.add(newItem);
 			} else {
-				/*
-				 * TODO: Refactor this part!
-				 */
 				throw new NullPointerException();
 			}
 		}
