@@ -34,7 +34,7 @@ public class NotaFiscal {
 		try {
 			Compravel venda = vendas.getCompravel(nomeProduto);
 			if (estoque.disponibilidadeDeProduto(venda) >= quantidadeProduto) {
-				ItemVenda newItem = new ItemVenda(venda, quantidadeProduto);
+				ItemVenda newItem = new ItemVenda(this, venda, quantidadeProduto);
 				estoque.retirarProduto(venda, quantidadeProduto);
 				itemList.add(newItem);
 			} else {
@@ -59,9 +59,11 @@ public class NotaFiscal {
 	public boolean addItem(String itemName, int quantidade) {
 		if (this.status == "em elaboracao") {
 			Compravel compra = bdProdutos.getCompravel(itemName);
+			if(compra == null) throw new NullPointerException();
+			
 			if (estoque.disponibilidadeDeProduto(compra) >= quantidade) {
 				estoque.retirarProduto(compra, quantidade);
-				ItemVenda newItem = new ItemVenda(compra, quantidade);
+				ItemVenda newItem = new ItemVenda(this, compra, quantidade);
 				itemList.add(newItem);
 				return true;
 			}
@@ -102,31 +104,30 @@ public class NotaFiscal {
 		return total;
 	}
 
-	void validar() {
+	public void validar() throws Exception {
 		try {
 			if(this.statusCliente == "validado") {
 				if (this.status == "em elaboracao") {
 					bdNF.validarNF(this);
-				}
-				System.out.println("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
+				}else
+					throw new Exception("A nota fiscal nao pode ser validada novamente pelo Banco de Dados.\n");
 			} else if (this.statusCliente == "nao validado ainda") { 
-				System.out.println("Cliente ainda nao validado.\n");
+				throw new Exception("Cliente ainda nao validado.\n");
 			} else { 
 				throw new Exception("O cliente foi invalidado, e a nota fiscal nao podera ser validada.\n");
 			}
 		} catch (Exception e) {
-		
+			throw e;
 		}
 	}
 	
-	void validarCliente() {
+	public void validarCliente() throws Exception {
 		try {
 			if (this.statusCliente == "nao validado ainda") {
-				spc.validarCPF(CPF);
+				statusCliente = spc.validarCPF(CPF);
 			}
-			System.out.println("O cliente nao pode ser validado novamente pelo SPC.\n");
 		} catch (Exception e) {
-		
+			throw e;
 		}
 	}
 	
@@ -142,14 +143,22 @@ public class NotaFiscal {
 		this.statusCliente = statusCliente;
 	}
 	
-	public void printNF() {
+	public String printNF() {
+		String message = new String();
+		message = "";
 		if (this.status == "em elaboracao") {
-			System.out.println("ID ainda não definido");
+			message+="ID ainda não definido\n";
+		}
+
+		if(this.status == "validada"){
+			message+="ID: " + Integer.toString(id) + "\n";
 		}
 		for (ItemVenda item : itemList) {
-			System.out.println(item.toString());
+			message+=item.toString()+"\n";
 		}
-		System.out.println(status);
+		
+		message+=status;
+		return message;
 	}
 	
 }

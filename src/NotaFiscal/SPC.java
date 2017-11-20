@@ -19,7 +19,6 @@ public class SPC {
 	}
 	
 	boolean isOK(String cpf) {
-		/* Implementar */
-		return CPFs.contains(cpf);
+		return true;
 	}
 }

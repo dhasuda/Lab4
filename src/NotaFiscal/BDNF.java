@@ -11,11 +11,9 @@ public class BDNF {
 	private Set<NotaFiscal> notasFiscais = new HashSet<NotaFiscal>();
 	private Prefeitura _prefeitura;
 	
-	private BDNF(){}//singleton
-	
-	public void recebePrefeitura(Prefeitura prefeitura){
-		_prefeitura = prefeitura;
-	}
+	private BDNF(){
+		_prefeitura = Prefeitura.getInstance();
+	}//singleton
 	
 	static BDNF getInstance() {
 		return _bdnf;
@@ -23,6 +21,7 @@ public class BDNF {
 	
 	NotaFiscal validarNF(NotaFiscal notaFiscal) throws Exception {
 		if (isConsistente(notaFiscal)) {
+
 			notaFiscal.setStatus("validada");
 			notaFiscal.setId(++_id);
 			final NotaFiscal notaFiscalImutavel = notaFiscal;
