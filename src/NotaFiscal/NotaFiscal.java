@@ -103,6 +103,14 @@ public class NotaFiscal {
 		}
 		return total;
 	}
+	
+	public double getPrecoTaxado() {
+		double total = 0;
+		for (ItemVenda item : itemList) {
+			total += item.getPrecoTaxado();
+		}
+		return total;
+	}
 
 	public void validar() throws Exception {
 		try {
@@ -145,7 +153,7 @@ public class NotaFiscal {
 	
 	public String printNF() {
 		String message = new String();
-		message = "";
+		message = status + "\n";
 		if (this.status == "em elaboracao") {
 			message+="ID ainda não definido\n";
 		}
@@ -156,8 +164,14 @@ public class NotaFiscal {
 		for (ItemVenda item : itemList) {
 			message+=item.toString()+"\n";
 		}
+		message += "Total: "+Double.toString(getPreco())+"\n";
+		this.taxar();
+		double totalTax = getPrecoTaxado();
+		//truncate
+		totalTax = Math.round(100*totalTax)/100.0;
 		
-		message+=status;
+		message += "Total Taxado: "+Double.toString(totalTax)+"\n";
+		
 		return message;
 	}
 	

@@ -18,6 +18,7 @@ public class StrategyImpostos {
 	private void executarTaxacoes() {
 		Taxador taxa = new Taxador();
 		Set<Imposto> impostos = bdTax.getImpostos();
+		
 		for (ItemVenda item: itemList) {
 			for(Imposto imposto : impostos) {
 				taxa.visitarETaxar(item, imposto);
